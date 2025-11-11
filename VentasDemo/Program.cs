@@ -2,7 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using VentasDemo.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddSession();
+builder.Services.AddDistributedMemoryCache();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -22,6 +23,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthorization();
 

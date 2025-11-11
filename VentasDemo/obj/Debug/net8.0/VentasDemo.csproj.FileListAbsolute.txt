@@ -166,3 +166,4 @@ D:\Progra\C#\ASP.NET\PruebaTecnicaBAC\VentasDemo\bin\Debug\net8.0\runtimes\brows
 D:\Progra\C#\ASP.NET\PruebaTecnicaBAC\VentasDemo\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 D:\Progra\C#\ASP.NET\PruebaTecnicaBAC\VentasDemo\obj\Debug\net8.0\VentasDemo.csproj.AssemblyReference.cache
 D:\Progra\C#\ASP.NET\PruebaTecnicaBAC\VentasDemo\obj\Debug\net8.0\VentasDemo.csproj.Up2Date
+D:\Progra\C#\ASP.NET\PruebaTecnicaBAC\VentasDemo\obj\Debug\net8.0\VentasDemo.sourcelink.json
