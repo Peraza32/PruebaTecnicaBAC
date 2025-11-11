@@ -8,6 +8,8 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+builder.Services.AddScoped<VentasDemo.Repository.ProductRepository>();
+builder.Services.AddScoped<VentasDemo.Services.Interfaces.IProductService, VentasDemo.Services.ProductService>();
 
 var app = builder.Build();
 
@@ -30,5 +32,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();

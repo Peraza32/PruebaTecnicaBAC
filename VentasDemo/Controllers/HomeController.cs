@@ -6,6 +6,7 @@ namespace VentasDemo.Controllers;
 
 public class HomeController : Controller
 {
+
     private readonly ILogger<HomeController> _logger;
 
     public HomeController(ILogger<HomeController> logger)
@@ -15,6 +16,10 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        if (string.IsNullOrEmpty(HttpContext.Session.GetString("Username")))
+        {
+            return RedirectToAction("Login", "Auth");
+        }
         return View();
     }
 

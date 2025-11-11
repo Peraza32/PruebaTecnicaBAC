@@ -6,13 +6,13 @@ namespace VentasDemo.Models.ViewModels
 {
     public class AddProductViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Product name is required.")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Description is required.")]
         public string Description { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Price is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Please enter a valid price.")]
         public decimal Price { get; set; }
 

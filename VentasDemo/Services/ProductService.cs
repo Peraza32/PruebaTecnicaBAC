@@ -2,36 +2,45 @@
 
 using VentasDemo.Services.Interfaces;
 using VentasDemo.Models;
+using VentasDemo.Repository;
 
 namespace VentasDemo.Services
 {
     public class ProductService : IProductService
     {
-        
+        private ProductRepository _productRepository;
 
-        public Product GetProductById(int id)
+        public ProductService(ProductRepository productRepository)
         {
-            throw new NotImplementedException();
+            _productRepository = productRepository;
+        }
+
+        public Product? GetProductById(int id)
+        {
+            return _productRepository.GetProductById(id);
         }
 
         public void AddProduct(Product product)
         {
-            // Implementation
+            _productRepository.AddProduct(product);
+            _productRepository.Save();
         }
 
         public void UpdateProduct(Product product)
         {
-            // Implementation
+            _productRepository.UpdateProduct(product);
+            _productRepository.Save();
         }
 
         public void DeleteProduct(int id)
         {
-            // Implementation
+            _productRepository.DeleteProduct(id);
+            _productRepository.Save();
         }
 
-        public async Task<List<Product>> GetAllProducts()
+        public List<Product> GetAllProducts()
         {
-            throw new NotImplementedException();
+            return _productRepository.GetAllProducts().ToList();
         }
     }
 }

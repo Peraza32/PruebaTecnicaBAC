@@ -43,9 +43,9 @@ public class AuthController:Controller
         HttpContext.Session.SetString("Role", user.Role);
 
         if (user.Role == "admin")
-            return RedirectToAction("Index", "Product");
+            return RedirectToAction("Index", "Home");
         else
-            return RedirectToAction("Index", "Venta");
+            return RedirectToAction("Index", "Home");
     }
 
 
