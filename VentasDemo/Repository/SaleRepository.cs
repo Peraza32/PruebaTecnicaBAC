@@ -16,10 +16,11 @@ namespace VentasDemo.Repository
         {
             _context = context;
         }
-        public void AddSale(Sale sale)
+        public Sale AddSale(Sale sale)
         {
             _context.Sales.Add(sale);
             _context.SaveChanges();
+            return sale;
         }
 
         public void DeleteSale(int id)

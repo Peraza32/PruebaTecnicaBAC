@@ -20,6 +20,13 @@ public class HomeController : Controller
         {
             return RedirectToAction("Login", "Auth");
         }
+        var role = HttpContext.Session.GetString("Role");
+        // If not admin, redirect directly to Sales index page
+        if (string.IsNullOrEmpty(role) || role.ToLower() != "admin")
+        {
+            return RedirectToAction("Index", "Sale");
+        }
+
         return View();
     }
 

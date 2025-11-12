@@ -1,0 +1,193 @@
+@model VentasDemo.Models.ViewModels.SaleViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "New Sale";
+    var products = ViewData["Products"] as List<VentasDemo.Models.Product> ?? new List<VentasDemo.Models.Product>();
+    var productsJson = JsonSerializer.Serialize(products);
+}
+
+<div class="container py-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <form id="saleForm" asp-action="RegisterSale" method="post">
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Client</h5>
+                    <div class="mb-3">
+                        <label asp-for="ClientName" class="form-label">Client name</label>
+                        <input asp-for="ClientName" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TotalAmount" class="form-label">Total</label>
+                        <input asp-for="TotalAmount" class="form-control" readonly id="totalAmountInput" />
+                    </div>
+
+                    <div>
+                        <button type="button" id="registerBtn" class="btn btn-primary" disabled>Register Sale</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card p-3 mb-3">
+                    <h5>Add products</h5>
+                    <div class="input-group mb-2">
+                        <input type="text" id="productSearch" class="form-control"
+                            placeholder="Search products by name..." />
+                        <button type="button" id="clearSearch" class="btn btn-outline-secondary">Clear</button>
+                    </div>
+
+                    <div id="searchResults" style="max-height:220px; overflow:auto;"></div>
+                </div>
+
+                <div class="card p-3">
+                    <h5>Items</h5>
+                    <table class="table table-sm" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit price</th>
+                                <th>Quantity</th>
+                                <th>Line total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="itemsJson" id="itemsJson" />
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        const products = @Html.Raw(productsJson);
+
+        const searchInput = document.getElementById('productSearch');
+        const searchResults = document.getElementById('searchResults');
+        const itemsTableBody = document.querySelector('#itemsTable tbody');
+        const itemsJsonInput = document.getElementById('itemsJson');
+        const totalAmountInput = document.getElementById('totalAmountInput');
+        const registerBtn = document.getElementById('registerBtn');
+
+        let cart = [];
+
+        function renderSearchResults(list) {
+            searchResults.innerHTML = '';
+            if (!list || list.length === 0) {
+                searchResults.innerHTML = '<div class="text-muted">No products found</div>';
+                return;
+            }
+
+            list.forEach(p => {
+                const node = document.createElement('div');
+                node.className = 'd-flex justify-content-between align-items-center p-2 border-bottom';
+                node.innerHTML = `<div><strong>${escapeHtml(p.Name)}</strong><div class="text-muted small">${escapeHtml(p.Description)}</div></div><div><div>${p.Price.toFixed(2)}</div><button type="button" class="btn btn-sm btn-outline-primary mt-2 add-btn" data-id="${p.Id}">Add</button></div>`;
+                searchResults.appendChild(node);
+            });
+
+            document.querySelectorAll('.add-btn').forEach(b => b.addEventListener('click', e => {
+                const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                const prod = products.find(x => x.Id === id);
+                if (prod) addToCart(prod);
+            }));
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>"'`]/g, function (m) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;", '`': '&#96;' })[m]; });
+        }
+
+        function addToCart(product) {
+            const existing = cart.find(i => i.ProductId === product.Id);
+            if (existing) {
+                existing.Quantity += 1;
+            } else {
+                cart.push({ ProductId: product.Id, Quantity: 1, UnitPrice: product.Price, Name: product.Name });
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            itemsTableBody.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, idx) => {
+                const lineTotal = item.Quantity * item.UnitPrice;
+                total += lineTotal;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${escapeHtml(item.Name)}</td><td>${item.UnitPrice.toFixed(2)}</td><td><input type="number" min="1" value="${item.Quantity}" class="form-control form-control-sm qty-input" data-idx="${idx}" style="width:80px" /></td><td>${lineTotal.toFixed(2)}</td><td><button type="button" class="btn btn-sm btn-danger remove-btn" data-idx="${idx}">Remove</button></td>`;
+                itemsTableBody.appendChild(tr);
+            });
+
+            // wire events
+            document.querySelectorAll('.qty-input').forEach(el => el.addEventListener('change', e => {
+                const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
+                const val = parseInt(e.currentTarget.value) || 1;
+                cart[idx].Quantity = val < 1 ? 1 : val;
+                renderCart();
+            }));
+            document.querySelectorAll('.remove-btn').forEach(b => b.addEventListener('click', e => {
+                const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
+                cart.splice(idx, 1);
+                renderCart();
+            }));
+
+
+            totalAmountInput.value = total.toFixed(2);
+            itemsJsonInput.value = JSON.stringify(cart.map(i => ({ ProductId: i.ProductId, Quantity: i.Quantity, UnitPrice: i.UnitPrice })));
+
+            registerBtn.disabled = cart.length === 0;
+        }
+
+
+        function doSearch(q) {
+            const term = (q || '').trim().toLowerCase();
+            if (!term) return products.slice(0, 10);
+            return products.filter(p => (p.Name || '').toLowerCase().includes(term) || (p.Description || '').toLowerCase().includes(term)).slice(0, 20);
+        }
+
+        searchInput.addEventListener('input', e => {
+            const list = doSearch(e.target.value);
+            renderSearchResults(list);
+        });
+        document.getElementById('clearSearch').addEventListener('click', () => { searchInput.value = ''; renderSearchResults(products.slice(0, 10)); });
+
+        // initial render
+        renderSearchResults(products.slice(0, 10));
+
+        // Prevent accidental form submit via Enter key inside inputs (we will submit programmatically)
+        const saleForm = document.getElementById('saleForm');
+        saleForm.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && e.target && e.target.tagName.toLowerCase() !== 'textarea') {
+                e.preventDefault();
+            }
+        });
+
+        // register button submits the form (programmatic submit bypasses the keydown prevention)
+        registerBtn.addEventListener('click', () => {
+            // ensure itemsJson is fresh
+            itemsJsonInput.value = JSON.stringify(cart.map(i => ({ ProductId: i.ProductId, Quantity: i.Quantity, UnitPrice: i.UnitPrice })));
+            // submit the form programmatically
+            saleForm.submit();
+        });
+
+    </script>
+}

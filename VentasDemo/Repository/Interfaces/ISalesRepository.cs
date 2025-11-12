@@ -9,7 +9,7 @@ namespace VentasDemo.Repository.Interfaces
         IEnumerable<Sale> GetAllSales();
 
         Sale? GetSaleById(int id);
-        void AddSale(Sale sale);
+        Sale AddSale(Sale sale);
         void UpdateSale(Sale sale);
         void DeleteSale(int id);
         void Save();

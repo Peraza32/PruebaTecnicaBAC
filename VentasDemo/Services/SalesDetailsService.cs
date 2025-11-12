@@ -1,40 +1,46 @@
 
 
 using VentasDemo.Models;
+using VentasDemo.Repository;
 using VentasDemo.Services.Interfaces;
 
 namespace VentasDemo.Services
 {
     public class SalesDetailsService : ISalesDetailsService
     {
-        public SaleDetails addSaleDetail(int saleId, int productId, int quantity, decimal price)
-        {
-            throw new NotImplementedException();
-        }
+        private SalesDetailsRepository _saleDetailsRepository;
 
-        public SaleDetails addSaleDetails(int saleId, int productId, int quantity, decimal price)
+        public SalesDetailsService(SalesDetailsRepository saleDetailsRepository)
         {
-            throw new NotImplementedException();
+            _saleDetailsRepository = saleDetailsRepository;
         }
+        public SaleDetails addSaleDetails(SaleDetails saleDetails)
+        {
+            _saleDetailsRepository.AddSaleDetail(saleDetails);
+            _saleDetailsRepository.Save();
+            return saleDetails;
+        }   
+       
 
         public void deleteSaleDetails(int saleDetailsId)
         {
-            throw new NotImplementedException();
+            _saleDetailsRepository.DeleteSaleDetail(saleDetailsId);
+            _saleDetailsRepository.Save();
         }
 
         public List<SaleDetails> getAllSalesDetails()
         {
-            throw new NotImplementedException();
+            return _saleDetailsRepository.GetAllSalesDetails().ToList();
         }
 
-        public SaleDetails getSaleDetailbyId(int saleDetailId)
+        public SaleDetails? getSaleDetailbyId(int saleDetailId)
         {
-            throw new NotImplementedException();
+            return _saleDetailsRepository.GetSaleDetailById(saleDetailId);
         }
 
         public List<SaleDetails> getSaleDetailsBySaleId(int saleId)
         {
-            throw new NotImplementedException();
+            return _saleDetailsRepository.GetSalesDetailsBySaleId(saleId).ToList();
         }
     }
 }

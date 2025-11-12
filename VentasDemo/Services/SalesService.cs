@@ -1,25 +1,37 @@
 
 
 using VentasDemo.Models;
+using VentasDemo.Repository;
 using VentasDemo.Services.Interfaces;
 
 namespace VentasDemo.Services
 {
     public class SalesService : ISalesService
     {
-        public Sale addSale(int productId, int quantity)
+        private SaleRepository _saleRepository;
+
+        public SalesService(SaleRepository saleRepository)
         {
-            throw new NotImplementedException();
+            _saleRepository = saleRepository;
+        }
+
+        public Sale addSale(Sale sale)
+        {
+            _saleRepository.AddSale(sale);
+            _saleRepository.Save();
+            return sale;
         }
 
         public List<Sale> getAllSales()
         {
-            throw new NotImplementedException();
+            return _saleRepository.GetAllSales().ToList();
         }
 
-        public Sale getSalebyId(int saleId)
+        public Sale? getSalebyId(int saleId)
         {
-            throw new NotImplementedException();
+            // Return sale with details when available
+            return _saleRepository.GetSaleWithDetails(saleId);
         }
+
     }
 }
