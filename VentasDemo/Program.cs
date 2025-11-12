@@ -10,6 +10,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 builder.Services.AddScoped<VentasDemo.Repository.ProductRepository>();
 builder.Services.AddScoped<VentasDemo.Services.Interfaces.IProductService, VentasDemo.Services.ProductService>();
+builder.Services.AddScoped<VentasDemo.Repository.SaleRepository>();
+builder.Services.AddScoped<VentasDemo.Repository.SalesDetailsRepository>();
+builder.Services.AddScoped<VentasDemo.Services.Interfaces.ISalesService, VentasDemo.Services.SalesService>();
+builder.Services.AddScoped<VentasDemo.Services.Interfaces.ISalesDetailsService, VentasDemo.Services.SalesDetailsService>();
 
 var app = builder.Build();
 

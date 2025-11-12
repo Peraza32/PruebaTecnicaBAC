@@ -36,8 +36,7 @@
                                 <form asp-controller="Product" asp-action="DeleteProduct" asp-route-id="@product.Id"
                                     method="post" class="d-inline">
                                     <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Are you sure you want to delete "
-                                        @product.Name"?');">Delete</button>
+                                        onclick="return confirm('Are you sure you want to delete @product.Name?');">Delete</button>
                                 </form>
                             </div>
                         </div>

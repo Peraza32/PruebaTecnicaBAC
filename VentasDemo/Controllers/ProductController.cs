@@ -117,9 +117,16 @@ namespace VentasDemo.Controllers
         [HttpPost]
         public ActionResult DeleteProduct(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("Username")))
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("Username")) &&
+            string.IsNullOrEmpty(HttpContext.Session.GetString("Role")))
             {
                 return RedirectToAction("Login", "Auth");
+            }
+
+            if(HttpContext.Session.GetString("Role") != "admin")
+            {
+                TempData["ErrorMessage"] = "You do not have permission for this action.";
+                return RedirectToAction("Ventas");
             }
 
             _productService.DeleteProduct(id);
